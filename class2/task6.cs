@@ -5,5 +5,5 @@ int calculateMin(int[] values)
     {
         min = Math.Min(min, values[i]);
     }
-    return min;
+    return values[0];
 }
