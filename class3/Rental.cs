@@ -2,6 +2,7 @@ namespace class3
 {
     public class Rental
     {
+        static int _nextId = 0;
         public int Id { get; set; }
         public Equipment RentedEquipment { get; set; }
         public User Renter { get; set; }
@@ -9,9 +10,9 @@ namespace class3
         public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
 
-        public Rental(int id, Equipment equipment, User renter, DateTime rentalDate, DateTime dueDate)
+        public Rental(Equipment equipment, User renter, DateTime rentalDate, DateTime dueDate)
         {
-            Id = id;
+            Id = _nextId++;
             RentedEquipment = equipment;
             equipment.Status = EquipmentStatus.Rented;
             Renter = renter;
