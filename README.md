@@ -7,6 +7,10 @@ Class3:
     It was made for ease of modification.
     3. The data entered into the CLI is contained withing the process memory and
     is not committed to any database for the sake of simplicity. In production application a database is of course required
+    4. I aimed for high cohesion and responsibility splits, gathering duties related to different functionalities into different classes
+    5. I also aimed for loose coupling as the classes' interactions are usually just referals to other objects.
+    As the logic of handling duties of different classes is implemented fully inside the classes,
+    I reached loose coupling as any class can be modified and no other functionality will break except possibly for the CLI interface
     
 Class2:
 
