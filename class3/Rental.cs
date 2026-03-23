@@ -2,20 +2,22 @@ namespace class3
 {
     public class Rental
     {
+        static int _nextId = 0;
         public int Id { get; set; }
         public Equipment RentedEquipment { get; set; }
         public User Renter { get; set; }
         public DateTime RentalDate { get; set; }
-        public DateTime DueDate = RentalDate.AddDays(14); // Assuming a 2-week rental period
+        public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
 
-        public Rental(int id, Equipment equipment, User renter, DateTime rentalDate)
+        public Rental(Equipment equipment, User renter, DateTime rentalDate, DateTime dueDate)
         {
-            Id = id;
+            Id = _nextId++;
             RentedEquipment = equipment;
             equipment.Status = EquipmentStatus.Rented;
             Renter = renter;
             RentalDate = rentalDate;
+            DueDate = dueDate;
             ReturnDate = null;
         }
 
@@ -28,6 +30,14 @@ namespace class3
         public void DisplayInfo()
         {
             Console.WriteLine($"Rental ID: {Id}, Equipment: {RentedEquipment.Name}, Rental Date: {RentalDate}, Return Date: {(ReturnDate.HasValue ? ReturnDate.Value.ToString() : "Not returned")}");
+        }
+
+        public void checkForOverdue()
+        {
+            if (!ReturnDate.HasValue && DateTime.Now > DueDate)
+            {
+                Console.WriteLine($"Rental ID: {Id} is overdue. Due date was: {DueDate}");
+            }
         }
     }
 }
