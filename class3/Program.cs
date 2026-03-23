@@ -49,6 +49,55 @@ switch (args[0])
         rentals.Add(rental);
         Console.WriteLine($"User {renter.Name} rented {equipmentToRent.Name}");
         break;
+    case "Return":
+        var rentalToReturn = rentals[int.Parse(args[1])];
+        if (rentalToReturn.ReturnDate.HasValue)
+        {
+            Console.WriteLine($"Rental ID {rentalToReturn.Id} has already been returned.");
+            break;
+        }
+        if(DateTime.Now > rentalToReturn.DueDate)
+        {
+            Console.WriteLine($"Rental ID {rentalToReturn.Id} is overdue. Due date was: {rentalToReturn.DueDate}");
+            Console.WriteLine($"Penalty is: ${DateTime.Now.Subtract(rentalToReturn.DueDate).Days * 5} dollars.");
+        }
+        rentalToReturn.ReturnEquipment(DateTime.Now);
+        Console.WriteLine($"Rental ID {rentalToReturn.Id} has been returned.");
+        break;
+    case "MarkUnavailable":
+        var equipmentToMark = equipments[int.Parse(args[1])];
+        equipmentToMark.Status = EquipmentStatus.Unavailable;
+        Console.WriteLine($"Equipment {equipmentToMark.Name} marked as unavailable.");
+        break;
+    case "UserRentals":
+        var userForRentals = users[int.Parse(args[1])];
+        var userRentals = rentals.Where(r => r.Renter.Id == userForRentals.Id);
+        Console.WriteLine($"Rentals for user {userForRentals.Name}:");
+        foreach (var r in userRentals){r.DisplayInfo();}
+        break;
+    case "OverdueRentals":
+        Console.WriteLine("Overdue rentals:");
+        foreach (var r in rentals){r.checkForOverdue();}
+        break;
+    case "Report":
+        Console.WriteLine("Rental Report:");
+        foreach (var r in rentals)
+        {
+            r.DisplayInfo();
+            if (!r.ReturnDate.HasValue && DateTime.Now > r.DueDate)
+            {
+                Console.WriteLine($"  Status: Overdue (Due date was: {r.DueDate})");
+            }
+            else if (!r.ReturnDate.HasValue)
+            {
+                Console.WriteLine("  Status: Currently rented");
+            }
+            else
+            {
+                Console.WriteLine("  Status: Returned");
+            }
+        }
+        break;
     default:
         Console.WriteLine("Unknown equipment type.");
         break;
