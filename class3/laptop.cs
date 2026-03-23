@@ -6,8 +6,8 @@ namespace class3
         public int RAM { get; set; } // in GB
         public int Storage { get; set; } // in GB
 
-        public Laptop(int id, string name, string description, string processor, int ram, int storage)
-            : base(id, name, description)
+        public Laptop(string name, string description, string processor, int ram, int storage)
+            : base(name, description)
         {
             Processor = processor;
             RAM = ram;

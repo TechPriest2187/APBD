@@ -2,6 +2,7 @@ using EquipmentStatus = class3.EquipmentStatus;
 
 public abstract class Equipment
 {
+    static int _idCounter = 0;
     public int Id { get; set; }
     public string Name { get; set; }
 
@@ -11,9 +12,9 @@ public abstract class Equipment
 
     public DateTime AddedDate { get; set; }
 
-    Equipment(int id, string name, string description)
+    Equipment(string name, string description)
     {
-        Id = id;
+        Id = ++_idCounter;
         Name = name;
         Description = description;
     }
