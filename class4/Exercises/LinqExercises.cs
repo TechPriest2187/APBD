@@ -170,7 +170,8 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task11_JoinStudentsWithEnrollments()
     {
-        
+        return UniversityData.Students.Join(UniversityData.Enrollments,
+            )
     }
 
     /// <summary>
