@@ -64,7 +64,7 @@ public sealed class LinqExercises
     {
         return UniversityData.Courses.Where(s => s.Category == "Analytics")
             .Select(e => $"{e.Title} {e.StartDate}").FirstOrDefault() 
-            ?? "No course of Analytics found";
+            ?? "No course of Analytics found".ToList();
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task05_IsThereAnyInactiveEnrollment()
     {
-        return UniversityData.Enrollments.Any(e => e.IsActive == True);
+        return UniversityData.Enrollments.Any(e => e.IsActive == true).ToList();;
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task06_DoAllLecturersHaveDepartment()
     {
-        return UniversityData.Lecturers.All(l => l.Department != null);
+        return UniversityData.Lecturers.All(l => l.Department != null).ToList();;
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task07_CountActiveEnrollments()
     {
-        return UniversityData.Enrollments.Count(e => e.IsActive == True);
+        return UniversityData.Enrollments.Count(e => e.IsActive == True).ToList();;
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task08_DistinctStudentCities()
     {
-        return UniversityData.Students.Select(s => s.City).Distinct();
+        return UniversityData.Students.Select(s => s.City).Distinct().ToList();;
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task09_ThreeNewestEnrollments()
     {
-        UniversityData.Enrollments.OrderBy(e => e.EnrollmentDate).take(3);
+        UniversityData.Enrollments.OrderBy(e => e.EnrollmentDate).Take(3).ToList();;
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task10_SecondPageOfCourses()
     {
-        return UniversityData.Courses.Select(c => $"{c.Title} {c.Category}").Skip(2);
+        return UniversityData.Courses.Select(c => $"{c.Title} {c.Category}").Skip(2).Take(2).ToList();;
     }
 
     /// <summary>
@@ -174,7 +174,7 @@ public sealed class LinqExercises
         s => Student.ID,
         e => enrollment.ID,
         (s, e) => new {Student = s, Enrollment = e})
-        .Select(s.FirstName, s.LastName, e.EnrollmentDate);
+        .Select(s, e => $"{s.FirstName}, {s.LastName}, {e.EnrollmentDate}").ToList();;
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ public sealed class LinqExercises
         c => Course.ID,
         e => Enrollment.ID,
         (c, e) => new {Course = c, Enrollment = e})
-        .Select(s.FirstName, s.LastName, c.Title);
+        .Select(s, c => $"{s.FirstName}, {s.LastName}, {c.Title}").ToList();;
     }
 
     /// <summary>
@@ -217,7 +217,7 @@ public sealed class LinqExercises
         e => Enrollment.ID,
         c => Course.ID,
         (e, c) => new { Enrollment = e, Course = c})
-        .GroupBy(c.Title).Select(c.Title, Count(c.Title));
+        .GroupBy(c => c.Title).Select(c => $"{c.Title}, {Count(c.Title)}").ToList();;
     }
 
     /// <summary>
@@ -237,8 +237,8 @@ public sealed class LinqExercises
         return UniversityData.Enrollment.Join(UniversityData.Course,
         e => Enrollment.ID,
         c => Course.ID,
-        (e, c) => new {Enrollment = e, Course = c}).Where(e.FinalGrade != null)
-        .Select(c.Title, AVG(e.FinalGrade)).GroupBy(c.Title);
+        (e, c) => new {Enrollment = e, Course = c}).Where(e => e.FinalGrade != null)
+        .GroupBy(c.Title).Select(c, e => $"{c.Title}, {AVG(e.FinalGrade)}").ToList();;
     }
 
     /// <summary>
@@ -258,8 +258,8 @@ public sealed class LinqExercises
         l => Lecturers,
         c => Course,
         (l, c) => new {Lecturers = l, Course = c})
-        .Select(l.FirstName, l.LastName, Count(c.ID))
-        .GroupBy(l.FirstName, l.LastName);
+        .GroupBy(l => l.FirstName, l.LastName)
+        .Select(l, c => $"{l.FirstName}, {l.LastName}, {Count(c.ID)}").ToList();
     }
 
     /// <summary>
@@ -280,9 +280,9 @@ public sealed class LinqExercises
         s => Student.ID,
         e => Enrollment,
         (s, e) => new {Student = s, Enrollment = e})
-        .Where(e.FinalGrade != null)
-        .Select(s.FirstName, s.LastName, MAX(e.FinalGrade))
-        .GroupBy(s.FirstName, s.LastName);
+        .Where(e => e.FinalGrade != null)
+        .GroupBy(s => s.FirstName, s.LastName)
+        .Select(s, e => $"{s.FirstName}, {s.LastName}, {MAX(e.FinalGrade)}").ToList();
     }
 
     /// <summary>
@@ -304,10 +304,11 @@ public sealed class LinqExercises
         s => Student.ID,
         e => Enrollment.ID,
         (s, e) => new {Student = s, Enrollment = e})
-        .Where(e.IsActive == True)
-        .GroupBy(s.FirstName, s.LastName)
-        .Select(s.FirstName, s.LastName, Count(*))
-        .HAVING(Count(*) > 1);
+        .Where(e => e.IsActive == True)
+        .GroupBy(s => s.FirstName, s.LastName)
+        .Where(g => g.count > 1)
+        .Select(s => $"{s.FirstName}, {s.LastName}, {Count(s.FirstName)}")
+
     }
 
     /// <summary>
