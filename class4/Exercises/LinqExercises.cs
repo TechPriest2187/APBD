@@ -170,8 +170,11 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task11_JoinStudentsWithEnrollments()
     {
-        return UniversityData.Students.Join(UniversityData.Enrollments,
-            )
+        return UniversityData.Student.Join(UniversityData.Enrollment,
+        s => Student.ID,
+        e => enrollment.ID,
+        (s, e) => new {Student = s, Enrollment = e})
+        .Select(s.FirstName, s.LastName, e.EnrollmentDate);
     }
 
     /// <summary>
@@ -187,7 +190,15 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task12_StudentCoursePairs()
     {
-        throw NotImplemented(nameof(Task12_StudentCoursePairs));
+        return UniversityData.Enrollment.Join(UniversityData.Student,
+        e => Enrollment.ID,
+        s => Student.ID,
+        (e, s) => new {Enrollment = e, Student = s})
+        .Join(UniversityData.Course,
+        c => Course.ID,
+        e => Enrollment.ID,
+        (c, e) => new {Course = c, Enrollment = e})
+        .Select(s.FirstName, s.LastName, c.Title);
     }
 
     /// <summary>
@@ -202,7 +213,11 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task13_GroupEnrollmentsByCourse()
     {
-        throw NotImplemented(nameof(Task13_GroupEnrollmentsByCourse));
+        return UniversityData.Enrollment.Join(UniversityData.Course,
+        e => Enrollment.ID,
+        c => Course.ID,
+        (e, c) => new { Enrollment = e, Course = c})
+        .GroupBy(c.Title).Select(c.Title, Count(c.Title));
     }
 
     /// <summary>
@@ -219,7 +234,11 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task14_AverageGradePerCourse()
     {
-        throw NotImplemented(nameof(Task14_AverageGradePerCourse));
+        return UniversityData.Enrollment.Join(UniversityData.Course,
+        e => Enrollment.ID,
+        c => Course.ID,
+        (e, c) => new {Enrollment = e, Course = c}).Where(e.FinalGrade != null)
+        .Select(c.Title, AVG(e.FinalGrade)).GroupBy(c.Title);
     }
 
     /// <summary>
@@ -235,7 +254,12 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task15_LecturersAndCourseCounts()
     {
-        throw NotImplemented(nameof(Task15_LecturersAndCourseCounts));
+        return UniversityData.Lecturers.LeftJoin(UniversityData.Course
+        l => Lecturers,
+        c => Course,
+        (l, c) => new {Lecturers = l, Course = c})
+        .Select(l.FirstName, l.LastName, Count(c.ID))
+        .GroupBy(l.FirstName, l.LastName);
     }
 
     /// <summary>
@@ -252,7 +276,13 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Task16_HighestGradePerStudent()
     {
-        throw NotImplemented(nameof(Task16_HighestGradePerStudent));
+        return UniversityData.Student.Join(UniversityData.Enrollment,
+        s => Student.ID,
+        e => Enrollment,
+        (s, e) => new {Student = s, Enrollment = e})
+        .Where(e.FinalGrade != null)
+        .Select(s.FirstName, s.LastName, MAX(e.FinalGrade))
+        .GroupBy(s.FirstName, s.LastName);
     }
 
     /// <summary>
@@ -270,7 +300,14 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Challenge01_StudentsWithMoreThanOneActiveCourse()
     {
-        throw NotImplemented(nameof(Challenge01_StudentsWithMoreThanOneActiveCourse));
+        return UniversityData.Student.Join(UniversityData.Enrollment,
+        s => Student.ID,
+        e => Enrollment.ID,
+        (s, e) => new {Student = s, Enrollment = e})
+        .Where(e.IsActive == True)
+        .GroupBy(s.FirstName, s.LastName)
+        .Select(s.FirstName, s.LastName, Count(*))
+        .HAVING(Count(*) > 1);
     }
 
     /// <summary>
@@ -287,7 +324,14 @@ public sealed class LinqExercises
     /// </summary>
     public IEnumerable<string> Challenge02_AprilCoursesWithoutFinalGrades()
     {
-        throw NotImplemented(nameof(Challenge02_AprilCoursesWithoutFinalGrades));
+        return UniversityData.Course.Join(UniversityData.Enrollment,
+        c => Course.ID,
+        e => Enrollment.ID,
+        (c, e) => new {Course = c, Enrollment = e})
+        .Where(MONTH(c.StartDate) = 4 AND YEAR(c.StartDate) = 2026)
+        .Select(c.Title)
+        .GroupBy(c.Title)
+        .HAVING(SUM())
     }
 
     /// <summary>
