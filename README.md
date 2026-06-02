@@ -22,3 +22,11 @@ Class2:
         Rebasing allows us to move the break-away history forward to the current main commit and do a fast-forward merge as if nothing happened
     3. How was the conflict resolved in your repository? 
         I chose 2 different numbers as outputs for a function, I chose the option I put on main instead of the feature-branch one
+Class 10:
+Why must passwords not be stored as plain text? Because them leaking will be a massive privacy hazard. When they are hased, even if they leak they will be very hard to reconstruct
+Why is raw SHA-256 not a good choice for passwords? It works so quickly it allows for bruteforcing passwords
+Why do we use salt? It's a text addition to the pasword to ensure collision avoidance when hashing
+What is the difference between salt and pepper? A salt is unique to each user and is stored directly in the database alongside the password hash. A pepper is a single secret string added to all passwords, but it is stored outside the database (e.g., in server environment variables). If a hacker steals the database but not the server configuration, the hashes remain incredibly difficult to crack.
+What is the difference between authentication and authorization? Authentication checks WHO the user is and authorization checks WHAT the user cna do
+Why is hiding a link in a view not enough as security? It's not enforced on the server side, so the user can just scrape or address the sensitive link directly
+Why can a "there is no such user" login message be a problem? It gives hackers clues that exactly the login is wrong, narrowing down their bruteforce
