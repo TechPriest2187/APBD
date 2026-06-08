@@ -1,0 +1,76 @@
+@page "/students"
+@inject StudentApiClient Api
+
+<PageTitle>Students</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Student List</h3>
+    <a href="/students/create" class="btn btn-success">Create New Student</a>
+</div>
+
+@if (isLoading)
+{
+    <p><em>Loading students from the API...</em></p>
+}
+else if (loadFailed)
+{
+    <div class="alert alert-warning">
+        Could not load students. Please check if the API is running.
+    </div>
+}
+else
+{
+    @* Fulfills requirement: ErrorBoundary around a fragment that could fail *@
+    <ErrorBoundary>
+        <ChildContent>
+            <DataTable Items="students">
+                <TableHeader>
+                    <th>ID</th>
+                    <th>Index</th>
+                    <th>Name</th>
+                    <th>Semester</th>
+                    <th>Actions</th>
+                </TableHeader>
+                <RowTemplate Context="student">
+                    <td>@student.Id</td>
+                    <td>@student.IndexNumber</td>
+                    <td>@student.FirstName @student.LastName</td>
+                    <td>@student.Semester</td>
+                    <td>
+                        <a href="/students/@student.Id" class="btn btn-sm btn-primary">Details</a>
+                    </td>
+                </RowTemplate>
+            </DataTable>
+        </ChildContent>
+        <ErrorContent Context="ex">
+            <div class="alert alert-danger">
+                A critical error occurred while rendering the data table.
+            </div>
+        </ErrorContent>
+    </ErrorBoundary>
+}
+
+@code {
+    private List<StudentDto> students = new();
+    private bool isLoading = true;
+    private bool loadFailed = false;
+
+    // Fulfills requirement: Data needed once at start is loaded here
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            students = await Api.GetStudentsAsync();
+        }
+        catch (HttpRequestException)
+        {
+            // Catch API connection errors so the UI doesn't completely crash
+            loadFailed = true;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

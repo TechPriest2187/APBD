@@ -1,0 +1,32 @@
+﻿@inherits LayoutComponentBase
+@inject StateContainer State
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <span>Observed Students: @State.ObservedStudents.Count</span>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Subscribe to the event so the UI updates when a student is observed
+        State.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe to prevent memory leaks
+        State.OnChange -= StateHasChanged;
+    }
+}

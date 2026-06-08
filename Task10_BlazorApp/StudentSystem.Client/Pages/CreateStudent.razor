@@ -1,0 +1,75 @@
+@page "/students/create"
+@inject StudentApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Create Student</PageTitle>
+
+<h3>Create a New Student</h3>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @* OnValidSubmit only triggers if all Data Annotations pass *@
+        <EditForm Model="student" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            @* Shows a summary of all errors at the top *@
+            <ValidationSummary class="text-danger" />
+
+            <div class="mb-3">
+                <label class="form-label">Index Number</label>
+                <InputText @bind-Value="student.IndexNumber" class="form-control" />
+                <ValidationMessage For="() => student.IndexNumber" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <InputText @bind-Value="student.FirstName" class="form-control" />
+                <ValidationMessage For="() => student.FirstName" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <InputText @bind-Value="student.LastName" class="form-control" />
+                <ValidationMessage For="() => student.LastName" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="student.Email" class="form-control" />
+                <ValidationMessage For="() => student.Email" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Semester</label>
+                <InputNumber @bind-Value="student.Semester" class="form-control" />
+                <ValidationMessage For="() => student.Semester" class="text-danger" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Student</button>
+            <a href="/students" class="btn btn-secondary">Cancel</a>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    // Initialize an empty DTO for the form to bind to
+    private StudentDto student = new() { Semester = 1 };
+
+    private async Task HandleSubmit()
+    {
+        var response = await Api.CreateStudentAsync(student);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            // Read the created student from the API to get the new ID
+            var createdStudent = await response.Content.ReadFromJsonAsync<StudentDto>();
+            
+            if (createdStudent is not null)
+            {
+                // Fulfills requirement: redirect to details page after creation
+                Navigation.NavigateTo($"/students/{createdStudent.Id}");
+            }
+        }
+    }
+}

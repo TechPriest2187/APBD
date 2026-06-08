@@ -1,0 +1,39 @@
+@page "/students/{Id:int}"
+@inject StudentApiClient Api
+@inject IJSRuntime JS
+
+<button @onclick="CopyEmail">Copy Email</button>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private StudentDto? student;
+    private IJSObjectReference? module;
+
+    // Fulfills OnParametersSetAsync requirement
+    protected override async Task OnParametersSetAsync()
+    {
+        student = await Api.GetStudentAsync(Id);
+    }
+
+    // Fulfills OnAfterRenderAsync and JS Interop requirement
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/interop.js");
+        }
+    }
+
+    private async Task CopyEmail()
+    {
+        if (module is not null && student is not null)
+        {
+            await module.InvokeVoidAsync("copyToClipboard", student.Email);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (module is not null) await module.DisposeAsync();
+    }
+}
